@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AudioVisualizer from './AudioVisualizer';
+import Keyboard from './Keyboard';
 import './App.css';
 
 class App extends Component {
@@ -51,6 +52,9 @@ class App extends Component {
         this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
         this.gainNode = this.audioContext.createGain();
         this.pannerNode = this.audioContext.createStereoPanner();
+        // Check this out!
+        this.oscillatorNode = this.audioContext.createOscillator();
+        this.oscillatorNode.start();
         this.sourceNode.connect(this.gainNode);
         this.gainNode.connect(this.pannerNode);
         this.pannerNode.connect(this.audioContext.destination);
@@ -76,10 +80,9 @@ class App extends Component {
     this.setState({ volume: e.target.value });
   }
 
-  // Check this out!
   handlePanningChange = (e) => {
     this.setState({ pan: e.target.value });
-    // Implement this
+    this.pannerNode.pan.value = Number(e.target.value) / 100;
   }
 
   handleConvolverChange = () => {
@@ -102,6 +105,16 @@ class App extends Component {
       this.pannerNode.connect(this.audioContext.destination);
       this.pannerNode.connect(this.analyserNode);
     }
+  }
+
+  // Check this out!
+  playNote = (frequency) => {
+    // Implement this
+  }
+
+  // Check this out!
+  stopPlaying = () => {
+    // Implement this
   }
 
   render() {
@@ -132,10 +145,12 @@ class App extends Component {
         <h1>Convolver Controls</h1>
         <label htmlFor="convolver">Convolver</label>
         <input type="checkbox" onChange={this.handleConvolverChange} />
-        {/* Check this out! */}
         <h1>Panning Controls</h1>
         <label htmlFor="panner">Panner</label>
         <input type="range" value={this.state.pan} onChange={this.handlePanningChange} />
+        {/* Check this out! */}
+        <h1>Oscillation Controls</h1>
+        <Keyboard playNote={this.playNote} stopPlaying={this.stopPlaying} />
       </div>
     );
   }
