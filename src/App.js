@@ -10,7 +10,8 @@ class App extends Component {
       paused: true,
       muted: false,
       volume: '100',
-      convolverOn: true,
+      convolverOn: false,
+      pan: '50',
     };
 
     this.audioContext = new AudioContext();
@@ -45,23 +46,21 @@ class App extends Component {
     this.videoElement = videoElement;
     this.setupConvolverNode()
       .then((buffer) => {
-        this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
-        this.gainNode = this.audioContext.createGain();
-        this.sourceNode.connect(this.gainNode);
-
-        // Check this out!
         this.convolverNode = this.audioContext.createConvolver();
         this.convolverNode.buffer = buffer;
-        this.gainNode.connect(this.convolverNode);
-        this.convolverNode.connect(this.audioContext.destination);
+        this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
+        this.gainNode = this.audioContext.createGain();
+        this.pannerNode = this.audioContext.createStereoPanner();
+        this.sourceNode.connect(this.gainNode);
+        this.gainNode.connect(this.pannerNode);
+        this.pannerNode.connect(this.audioContext.destination);
 
         this.analyserNode = this.audioContext.createAnalyser();
-        this.convolverNode.connect(this.analyserNode);
+        this.pannerNode.connect(this.analyserNode);
         this.forceUpdate();
       });
   }
 
-  // Check this out!
   setupConvolverNode = () => {
     return new Promise((resolve, reject) => {
       const ajaxRequest = new XMLHttpRequest();
@@ -77,11 +76,32 @@ class App extends Component {
     this.setState({ volume: e.target.value });
   }
 
-  // Check this out!!
+  // Check this out!
+  handlePanningChange = (e) => {
+    this.setState({ pan: e.target.value });
+    // Implement this
+  }
+
   handleConvolverChange = () => {
     const convolverOn = !this.state.convolverOn;
     this.setState({ convolverOn });
-    // Implement the remainder of this
+    this.sourceNode.disconnect();
+    this.gainNode.disconnect();
+    this.convolverNode.disconnect();
+    this.analyserNode.disconnect();
+    this.pannerNode.disconnect();
+    if (convolverOn) {
+      this.sourceNode.connect(this.gainNode);
+      this.gainNode.connect(this.convolverNode);
+      this.convolverNode.connect(this.pannerNode);
+      this.pannerNode.connect(this.audioContext.destination);
+      this.pannerNode.connect(this.analyserNode);
+    } else {
+      this.sourceNode.connect(this.gainNode);
+      this.gainNode.connect(this.pannerNode);
+      this.pannerNode.connect(this.audioContext.destination);
+      this.pannerNode.connect(this.analyserNode);
+    }
   }
 
   render() {
@@ -109,10 +129,13 @@ class App extends Component {
         { this.analyserNode &&
           <AudioVisualizer audioContext={this.audioContext} analyserNode={this.analyserNode} />
         }
-        {/* Check this out! */}
         <h1>Convolver Controls</h1>
         <label htmlFor="convolver">Convolver</label>
         <input type="checkbox" onChange={this.handleConvolverChange} />
+        {/* Check this out! */}
+        <h1>Panning Controls</h1>
+        <label htmlFor="panner">Panner</label>
+        <input type="range" value={this.state.pan} onChange={this.handlePanningChange} />
       </div>
     );
   }
