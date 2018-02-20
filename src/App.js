@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import AudioVisualizer from './AudioVisualizer';
 import './App.css';
 
 class App extends Component {
@@ -11,7 +12,6 @@ class App extends Component {
       volume: '100',
     };
 
-    // Check this out!
     this.audioContext = new AudioContext();
   }
 
@@ -37,19 +37,25 @@ class App extends Component {
   }
 
   handleDurationChange = (e) => {
-    // What might this be useful for?
     this.videoDuration = this.videoElement.duration;
   }
 
-  // Check this out!
   setupVideoElement = (videoElement) => {
     this.videoElement = videoElement;
     this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
-    // Implement the remainder of this
+    this.gainNode = this.audioContext.createGain();
+    this.sourceNode.connect(this.gainNode);
+    this.gainNode.connect(this.audioContext.destination);
+
+    // Check this out!
+    this.analyserNode = this.audioContext.createAnalyser();
+    this.gainNode.connect(this.analyserNode);
+    this.forceUpdate();
   }
 
   handleVolumeChange = (e) => {
-    // Implement me
+    this.gainNode.gain.value = Number(e.target.value) / 100;
+    this.setState({ volume: e.target.value });
   }
 
   render() {
@@ -74,6 +80,9 @@ class App extends Component {
           <label htmlFor="volume">Volume</label>
           <input id="volume" type="range" value={this.state.volume} onChange={this.handleVolumeChange} />
         </div>
+        { this.analyserNode &&
+          <AudioVisualizer audioContext={this.audioContext} analyserNode={this.analyserNode} />
+        }
       </div>
     );
   }
