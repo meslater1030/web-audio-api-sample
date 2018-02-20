@@ -1,23 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 export default function Bar(props) {
-  if (props.height === 0) {
-    return <div />;
-  }
   return (
     <div
       style={{
-        height: `${150 + props.height}px`,
-        width: '5px',
+        height: `${200 + Number(props.height)}px`,
+        width: '1px',
         backgroundColor: 'pink',
         display: 'inline-block',
-        margin: '1px',
+        margin: '0.5px',
       }}
     />
   );
-}
-
-Bar.propTypes = {
-  height: PropTypes.number.isRequired,
 }

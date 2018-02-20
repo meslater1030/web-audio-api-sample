@@ -10,6 +10,7 @@ class App extends Component {
       paused: true,
       muted: false,
       volume: '100',
+      convolverOn: true,
     };
 
     this.audioContext = new AudioContext();
@@ -42,20 +43,45 @@ class App extends Component {
 
   setupVideoElement = (videoElement) => {
     this.videoElement = videoElement;
-    this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
-    this.gainNode = this.audioContext.createGain();
-    this.sourceNode.connect(this.gainNode);
-    this.gainNode.connect(this.audioContext.destination);
+    this.setupConvolverNode()
+      .then((buffer) => {
+        this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
+        this.gainNode = this.audioContext.createGain();
+        this.sourceNode.connect(this.gainNode);
 
-    // Check this out!
-    this.analyserNode = this.audioContext.createAnalyser();
-    this.gainNode.connect(this.analyserNode);
-    this.forceUpdate();
+        // Check this out!
+        this.convolverNode = this.audioContext.createConvolver();
+        this.convolverNode.buffer = buffer;
+        this.gainNode.connect(this.convolverNode);
+        this.convolverNode.connect(this.audioContext.destination);
+
+        this.analyserNode = this.audioContext.createAnalyser();
+        this.convolverNode.connect(this.analyserNode);
+        this.forceUpdate();
+      });
+  }
+
+  // Check this out!
+  setupConvolverNode = () => {
+    return new Promise((resolve, reject) => {
+      const ajaxRequest = new XMLHttpRequest();
+      ajaxRequest.open('GET', 'https://mdn.github.io/voice-change-o-matic/audio/concert-crowd.ogg', true);
+      ajaxRequest.responseType = 'arraybuffer';
+      ajaxRequest.onload = () => this.audioContext.decodeAudioData(ajaxRequest.response, resolve, reject);
+      ajaxRequest.send();
+    });
   }
 
   handleVolumeChange = (e) => {
     this.gainNode.gain.value = Number(e.target.value) / 100;
     this.setState({ volume: e.target.value });
+  }
+
+  // Check this out!!
+  handleConvolverChange = () => {
+    const convolverOn = !this.state.convolverOn;
+    this.setState({ convolverOn });
+    // Implement the remainder of this
   }
 
   render() {
@@ -83,6 +109,10 @@ class App extends Component {
         { this.analyserNode &&
           <AudioVisualizer audioContext={this.audioContext} analyserNode={this.analyserNode} />
         }
+        {/* Check this out! */}
+        <h1>Convolver Controls</h1>
+        <label htmlFor="convolver">Convolver</label>
+        <input type="checkbox" onChange={this.handleConvolverChange} />
       </div>
     );
   }
