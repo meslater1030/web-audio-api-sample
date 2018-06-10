@@ -1,7 +1,20 @@
 import React, { Component } from 'react';
+import PauseCircleOutline from '@material-ui/icons/PauseCircleOutline';
+import PlayCircleOutline from '@material-ui/icons/PlayCircleOutline';
+import VolumeOff from '@material-ui/icons/VolumeOff';
+import VolumeUp from '@material-ui/icons/VolumeUp';
+import Switch from '@material-ui/core/Switch';
+import IconButton from '@material-ui/core/IconButton';
+import Typeography from '@material-ui/core/Typography';
+import Slider from '@material-ui/lab/Slider';
 import AudioVisualizer from './AudioVisualizer';
 import Keyboard from './Keyboard';
 import './App.css';
+import SimpleAppBar from './components/SimpleAppBar';
+import ContentWrapper from './components/ContentWrapper';
+import AccordionMenu from './components/AccordionMenu';
+import ColumnWrapper from './components/ColumnWrapper';
+import RowWrapper from './components/RowWrapper';
 
 class App extends Component {
   constructor(props) {
@@ -10,7 +23,7 @@ class App extends Component {
       currentTime: 0,
       paused: true,
       muted: false,
-      volume: '100',
+      volume: 100,
       convolverOn: false,
       pan: '50',
     };
@@ -32,10 +45,11 @@ class App extends Component {
     this.videoElement.muted = !this.videoElement.muted;
   }
 
-  handleTimeChange = (e) => {
-    this.setState({ currentTime: e.target.value });
+  handleTimeChange = (e, value) => {
+    const currentTime = this.videoDuration * Number(value) / 100;
+    this.setState({ currentTime: value });
     if (this.videoDuration && this.videoDuration !== Infinity) {
-      this.videoElement.currentTime = this.videoDuration * Number(e.target.value) / 100;
+      this.videoElement.currentTime = currentTime;
     }
   }
 
@@ -43,12 +57,18 @@ class App extends Component {
     this.videoDuration = this.videoElement.duration;
   }
 
+  getUserMedia = () => {
+    return navigator.mediaDevices.getUserMedia({ audio: true });
+  }
+
   setupVideoElement = (videoElement) => {
     this.videoElement = videoElement;
     this.setupConvolverNode()
-      .then((buffer) => {
+      .then((buffer) => Promise.all([buffer, this.getUserMedia()]))
+      .then(([buffer, audioStream]) => {
         this.convolverNode = this.audioContext.createConvolver();
         this.convolverNode.buffer = buffer;
+        // this.sourceNode = this.audioContext.createMediaStreamSource(audioStream);
         this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
         this.gainNode = this.audioContext.createGain();
         this.pannerNode = this.audioContext.createStereoPanner();
@@ -71,21 +91,23 @@ class App extends Component {
   setupConvolverNode = () => {
     return new Promise((resolve, reject) => {
       const ajaxRequest = new XMLHttpRequest();
-      ajaxRequest.open('GET', 'https://mdn.github.io/voice-change-o-matic/audio/concert-crowd.ogg', true);
+      // This one is also pretty good
+      // https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/stab-static-frequency-warp_zJIVQYV_.mp3
+      ajaxRequest.open('GET', 'https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/stab-static-frequency-warp_zJIVQYV_.mp3', true);
       ajaxRequest.responseType = 'arraybuffer';
       ajaxRequest.onload = () => this.audioContext.decodeAudioData(ajaxRequest.response, resolve, reject);
       ajaxRequest.send();
     });
   }
 
-  handleVolumeChange = (e) => {
-    this.gainNode.gain.value = Number(e.target.value) / 100;
-    this.setState({ volume: e.target.value });
+  handleVolumeChange = (e, value) => {
+    this.gainNode.gain.value = Number(value) / 100;
+    this.setState({ volume: value });
   }
 
-  handlePanningChange = (e) => {
-    this.setState({ pan: e.target.value });
-    this.pannerNode.pan.value = Number(e.target.value) / 100;
+  handlePanningChange = (e, value) => {
+    this.setState({ pan: value });
+    this.pannerNode.pan.value = Number(value) / 100;
   }
 
   handleConvolverChange = () => {
@@ -116,8 +138,6 @@ class App extends Component {
 
   playNote = (frequency) => {
     this.oscillatorNode.frequency.value = frequency;
-
-    // Check this out!
     this.oscillatorNode.connect(this.mergerNode);
   }
 
@@ -125,39 +145,58 @@ class App extends Component {
     this.oscillatorNode.disconnect();
   }
 
+  handleTimeUpdate = () => {
+    this.setState({ currentTime: this.videoElement.currentTime / this.videoDuration * 100 });
+  }
+
   render() {
     return (
       <div>
-        <video
-          crossOrigin="anonymous"
-          ref={this.setupVideoElement}
-          onDurationChange={this.handleDurationChange}
-        >
-          <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.webm" type="video/webm" crossOrigin="anonymous" />
-        </video>
-        <div>
-          <button onClick={this.playPause}>
-            {this.state.paused ? 'Play' : 'Pause'}
-          </button>
-          <button onClick={this.muteUnmute}>
-            {this.state.muted ? 'Unmute' : 'Mute'}
-          </button>
-          <label htmlFor="time">Current Time</label>
-          <input id="time" type="range" value={this.state.currentTime} onChange={this.handleTimeChange} />
-          <label htmlFor="volume">Volume</label>
-          <input id="volume" type="range" value={this.state.volume} onChange={this.handleVolumeChange} />
-        </div>
-        { this.analyserNode &&
-          <AudioVisualizer audioContext={this.audioContext} analyserNode={this.analyserNode} />
-        }
-        <h1>Convolver Controls</h1>
-        <label htmlFor="convolver">Convolver</label>
-        <input type="checkbox" onChange={this.handleConvolverChange} />
-        <h1>Panning Controls</h1>
-        <label htmlFor="panner">Panner</label>
-        <input type="range" value={this.state.pan} onChange={this.handlePanningChange} />
-        <h1>Oscillation Controls</h1>
-        <Keyboard playNote={this.playNote} stopPlaying={this.stopPlaying} />
+        <SimpleAppBar appTitle="Web Audio API Sample" />
+        <ContentWrapper>
+          <RowWrapper>
+            <ColumnWrapper>
+              <video
+                crossOrigin="anonymous"
+                ref={this.setupVideoElement}
+                onDurationChange={this.handleDurationChange}
+                onTimeUpdate={this.handleTimeUpdate}
+              >
+                <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.webm" type="video/webm" crossOrigin="anonymous" />
+              </video>
+              <div>
+                <Slider value={this.state.currentTime} aria-labelledby="time" onChange={this.handleTimeChange} />
+                <div style={{ display: 'flex' }}>
+                  <IconButton onClick={this.playPause}>
+                    {this.state.paused ? <PlayCircleOutline /> : <PauseCircleOutline />}
+                  </IconButton>
+                  <IconButton onClick={this.muteUnmute}>
+                    {this.state.muted ? <VolumeUp /> : <VolumeOff />}
+                  </IconButton>
+                  { !this.state.muted &&  <Slider value={this.state.volume} onChange={this.handleVolumeChange} />  }
+                </div>            
+              </div>
+            </ColumnWrapper>
+            <ColumnWrapper>
+              <AccordionMenu
+                audioVisualizerDemo={this.analyserNode && <AudioVisualizer audioContext={this.audioContext} analyserNode={this.analyserNode} />}
+                convolverControls={
+                  <div style={{ width: '500px', textAlign: 'center' }}>
+                    <Typeography>Convolver</Typeography>
+                    <Switch checked={this.state.convolverOn} onChange={this.handleConvolverChange} />
+                  </div>
+                }
+                panningControls={
+                  <div style={{ width: '500px' }}>
+                    <Typeography id="panner">Panner</Typeography>
+                    <Slider aria-labelledby="panner" value={this.state.pan} onChange={this.handlePanningChange} />
+                  </div>
+                }
+                oscillationControls={<Keyboard playNote={this.playNote} stopPlaying={this.stopPlaying} />}
+              />
+            </ColumnWrapper>
+          </RowWrapper>
+        </ContentWrapper>
       </div>
     );
   }

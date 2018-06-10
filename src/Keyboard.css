@@ -1,0 +1,50 @@
+.keyboard-wrapper {
+    position: relative;
+    display: flex;
+}
+
+.note:first-of-type {
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.note.white-key {
+    border-right: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.note {
+    cursor: pointer;
+}
+
+.note button {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border: none;
+    align-items: center;
+}
+
+.white-key {
+    width: 60px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.black-key {
+    z-index: 1000;  
+    position: relative;
+}
+
+.black-key button {
+    position: absolute;
+    width: 30px;
+    height: 120px;
+    color: white;
+    background-color: black;
+    left: -15px;
+}

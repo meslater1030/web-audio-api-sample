@@ -5,7 +5,7 @@ export default function Bar(props) {
     <div
       style={{
         height: `${200 + Number(props.height)}px`,
-        width: '1px',
+        width: `${props.width}px`,
         backgroundColor: 'pink',
         display: 'inline-block',
         margin: '0.5px',
