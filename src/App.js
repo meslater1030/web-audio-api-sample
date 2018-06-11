@@ -25,7 +25,7 @@ class App extends Component {
       muted: false,
       volume: 100,
       convolverOn: false,
-      pan: '50',
+      pan: 50,
     };
 
     this.audioContext = new AudioContext();
@@ -72,10 +72,9 @@ class App extends Component {
         this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
         this.gainNode = this.audioContext.createGain();
         this.pannerNode = this.audioContext.createStereoPanner();
+        this.pannerNode.pan.value = 0.5;
         this.oscillatorNode = this.audioContext.createOscillator();
         this.oscillatorNode.start();
-
-        // Check this out!
         this.mergerNode = this.audioContext.createChannelMerger();
         this.sourceNode.connect(this.mergerNode);
         this.mergerNode.connect(this.gainNode);
@@ -91,8 +90,6 @@ class App extends Component {
   setupConvolverNode = () => {
     return new Promise((resolve, reject) => {
       const ajaxRequest = new XMLHttpRequest();
-      // This one is also pretty good
-      // https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/stab-static-frequency-warp_zJIVQYV_.mp3
       ajaxRequest.open('GET', 'https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/stab-static-frequency-warp_zJIVQYV_.mp3', true);
       ajaxRequest.responseType = 'arraybuffer';
       ajaxRequest.onload = () => this.audioContext.decodeAudioData(ajaxRequest.response, resolve, reject);
@@ -152,7 +149,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <SimpleAppBar appTitle="Web Audio API Sample" />
+        <SimpleAppBar appTitle="Exploring the Native JS Web Audio API" />
         <ContentWrapper>
           <RowWrapper>
             <ColumnWrapper>

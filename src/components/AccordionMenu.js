@@ -45,9 +45,7 @@ class ControlledExpansionPanels extends React.Component {
             <Typography className={classes.secondaryHeading}>A bar chart representing the audio</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Typography>
-              {this.props.audioVisualizerDemo}
-            </Typography>
+            {this.props.audioVisualizerDemo}
           </ExpansionPanelDetails>
         </ExpansionPanel>
         <ExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')}>
@@ -58,9 +56,7 @@ class ControlledExpansionPanels extends React.Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Typography>
-              {this.props.convolverControls}
-            </Typography>
+            {this.props.convolverControls}
           </ExpansionPanelDetails>
         </ExpansionPanel>
         <ExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')}>
@@ -71,9 +67,7 @@ class ControlledExpansionPanels extends React.Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Typography>
-              {this.props.panningControls}
-            </Typography>
+            {this.props.panningControls}
           </ExpansionPanelDetails>
         </ExpansionPanel>
         <ExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')}>
@@ -84,9 +78,7 @@ class ControlledExpansionPanels extends React.Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Typography>
-              {this.props.oscillationControls}
-            </Typography>
+            {this.props.oscillationControls}
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </div>
