@@ -1,0 +1,10 @@
+.audio-node {
+    background:  #f50057;
+    border-radius: 8px;
+    filter: drop-shadow(3px 2px 4px #ccc);
+    color: white;
+    display: inline-block;
+    text-align: center;
+    padding: 40px 20px;
+    margin: 10px;
+  }

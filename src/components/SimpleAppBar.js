@@ -17,9 +17,17 @@ function SimpleAppBar(props) {
     <div className={classes.root}>
       <AppBar position="static" color="default">
         <Toolbar>
-          <Typography variant="title" color="inherit" style={{ flex: 2 }}>
-            {props.appTitle}
-          </Typography>
+          <div style={{ flex: 2 }}>
+            <Typography variant="title" color="inherit" style={{ flex: 2 }}>
+              {props.appTitle}
+            </Typography>
+            <Typography color="inherit">
+              Megan Slater
+            </Typography>
+            <Typography>
+              @meslater1030
+            </Typography>
+          </div>
           <img src="./GenUILogo.png" style={{ height: '80px' }}/>
         </Toolbar>
       </AppBar>

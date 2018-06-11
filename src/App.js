@@ -15,6 +15,8 @@ import ContentWrapper from './components/ContentWrapper';
 import AccordionMenu from './components/AccordionMenu';
 import ColumnWrapper from './components/ColumnWrapper';
 import RowWrapper from './components/RowWrapper';
+import FullPageDialog from './components/FullPageDialog';
+import VideoCodeExample from './components/VideoCodeExample';
 
 class App extends Component {
   constructor(props) {
@@ -153,14 +155,14 @@ class App extends Component {
         <ContentWrapper>
           <RowWrapper>
             <ColumnWrapper>
-              <video
-                crossOrigin="anonymous"
-                ref={this.setupVideoElement}
-                onDurationChange={this.handleDurationChange}
-                onTimeUpdate={this.handleTimeUpdate}
-              >
-                <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.webm" type="video/webm" crossOrigin="anonymous" />
-              </video>
+                <video
+                  crossOrigin="anonymous"
+                  ref={this.setupVideoElement}
+                  onDurationChange={this.handleDurationChange}
+                  onTimeUpdate={this.handleTimeUpdate}
+                >
+                  <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.webm" type="video/webm" crossOrigin="anonymous" />
+                </video>
               <div>
                 <Slider value={this.state.currentTime} aria-labelledby="time" onChange={this.handleTimeChange} />
                 <div style={{ display: 'flex' }}>
@@ -173,6 +175,9 @@ class App extends Component {
                   { !this.state.muted &&  <Slider value={this.state.volume} onChange={this.handleVolumeChange} />  }
                 </div>            
               </div>
+              <RowWrapper>
+                <VideoCodeExample />
+              </RowWrapper>
             </ColumnWrapper>
             <ColumnWrapper>
               <AccordionMenu
