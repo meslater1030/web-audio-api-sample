@@ -15,11 +15,12 @@ function SimpleAppBar(props) {
   const { classes } = props;
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="primary">
+      <AppBar position="static" color="default">
         <Toolbar>
-          <Typography variant="title" color="inherit">
+          <Typography variant="title" color="inherit" style={{ flex: 2 }}>
             {props.appTitle}
           </Typography>
+          <img src="./GenUILogo.png" style={{ height: '80px' }}/>
         </Toolbar>
       </AppBar>
     </div>
