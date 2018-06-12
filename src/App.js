@@ -18,6 +18,7 @@ import RowWrapper from './components/RowWrapper';
 import VisualizerCode from './components/VisualizerCode';
 import VideoCodeExample from './components/VideoCodeExample';
 import ConvolverCodeExample from './components/ConvolverCodeExample';
+import PanningCodeExample from './components/PanningCodeExample';
 
 class App extends Component {
   constructor(props) {
@@ -199,6 +200,7 @@ class App extends Component {
                   <div style={{ width: '500px' }}>
                     <Typeography id="panner">Panner</Typeography>
                     <Slider aria-labelledby="panner" value={this.state.pan} onChange={this.handlePanningChange} />
+                    <PanningCodeExample />
                   </div>
                 }
                 oscillationControls={<Keyboard playNote={this.playNote} stopPlaying={this.stopPlaying} />}
