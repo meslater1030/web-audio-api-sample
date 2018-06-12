@@ -15,7 +15,7 @@ import ContentWrapper from './components/ContentWrapper';
 import AccordionMenu from './components/AccordionMenu';
 import ColumnWrapper from './components/ColumnWrapper';
 import RowWrapper from './components/RowWrapper';
-import FullPageDialog from './components/FullPageDialog';
+import VisualizerCode from './components/VisualizerCode';
 import VideoCodeExample from './components/VideoCodeExample';
 
 class App extends Component {
@@ -181,7 +181,12 @@ class App extends Component {
             </ColumnWrapper>
             <ColumnWrapper>
               <AccordionMenu
-                audioVisualizerDemo={this.analyserNode && <AudioVisualizer audioContext={this.audioContext} analyserNode={this.analyserNode} />}
+                audioVisualizerDemo={this.analyserNode &&
+                  <div>
+                    <AudioVisualizer audioContext={this.audioContext} analyserNode={this.analyserNode} />
+                    <VisualizerCode />
+                  </div>
+                }
                 convolverControls={
                   <div style={{ width: '500px', textAlign: 'center' }}>
                     <Typeography>Convolver</Typeography>

@@ -12,7 +12,7 @@ export default function VideoCodeExample() {
         const audioContext = new AudioContext();
         const videoElement = document.querySelector('video');
         const sourceNode = audioContext.createMediaElementSource(videoElement);
-        const gainNode = this.audioContext.createGain();
+        const gainNode = audioContext.createGain();
         sourceNode.connect(gainNode);
         gainNode.connect(audioContext.destination);
 
