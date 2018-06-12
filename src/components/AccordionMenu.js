@@ -10,6 +10,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = theme => ({
   root: {
     width: '100%',
+    panel1Expanded: false,
+    panel2Expanded: false,
+    panel3Expanded: false,
+    panel4Expanded: false,
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -27,19 +31,19 @@ class ControlledExpansionPanels extends React.Component {
     expanded: null,
   };
 
-  handleChange = panel => (event, expanded) => {
+  handleChange = panel => (event, panel) => {
     this.setState({
-      expanded: expanded ? panel : false,
+      [`${panel}Expanded`]: !this.state[`${panel}Expanded`],
     });
   };
 
   render() {
     const { classes } = this.props;
-    const { expanded } = this.state;
+    const { panel1Expanded, panel2Expanded, panel3Expanded, panel4Expanded } = this.state;
 
     return (
       <div className={classes.root}>
-        <ExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')}>
+        <ExpansionPanel expanded={panel1Expanded} onChange={this.handleChange('panel1')}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className={classes.heading}>Audio Visualizer</Typography>
             <Typography className={classes.secondaryHeading}>A bar chart representing the audio</Typography>
@@ -48,7 +52,7 @@ class ControlledExpansionPanels extends React.Component {
             {this.props.audioVisualizerDemo}
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')}>
+        <ExpansionPanel expanded={panel2Expanded} onChange={this.handleChange('panel2')}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className={classes.heading}>Convolver Controls</Typography>
             <Typography className={classes.secondaryHeading}>
@@ -59,7 +63,7 @@ class ControlledExpansionPanels extends React.Component {
             {this.props.convolverControls}
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')}>
+        <ExpansionPanel expanded={panel3Expanded} onChange={this.handleChange('panel3')}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className={classes.heading}>Panning Controls</Typography>
             <Typography className={classes.secondaryHeading}>
@@ -70,7 +74,7 @@ class ControlledExpansionPanels extends React.Component {
             {this.props.panningControls}
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')}>
+        <ExpansionPanel expanded={panel4Expanded} onChange={this.handleChange('panel4')}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className={classes.heading}>Oscillation Controls</Typography>
             <Typography className={classes.secondaryHeading}>
