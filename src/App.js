@@ -19,6 +19,8 @@ import VisualizerCode from './components/VisualizerCode';
 import VideoCodeExample from './components/VideoCodeExample';
 import ConvolverCodeExample from './components/ConvolverCodeExample';
 import PanningCodeExample from './components/PanningCodeExample';
+import OscillatorCodeExample from './components/OscillatorCodeExample';
+import { Button } from '@material-ui/core';
 
 class App extends Component {
   constructor(props) {
@@ -30,6 +32,7 @@ class App extends Component {
       volume: 100,
       convolverOn: false,
       pan: 50,
+      useVoice: false,
     };
 
     this.audioContext = new AudioContext();
@@ -68,12 +71,11 @@ class App extends Component {
   setupVideoElement = (videoElement) => {
     this.videoElement = videoElement;
     this.setupConvolverNode()
-      .then((buffer) => Promise.all([buffer, this.getUserMedia()]))
-      .then(([buffer, audioStream]) => {
+      .then((buffer) => {
         this.convolverNode = this.audioContext.createConvolver();
         this.convolverNode.buffer = buffer;
-        // this.sourceNode = this.audioContext.createMediaStreamSource(audioStream);
         this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
+        this.mediaSourceNode = this.sourceNode;
         this.gainNode = this.audioContext.createGain();
         this.pannerNode = this.audioContext.createStereoPanner();
         this.pannerNode.pan.value = 0.5;
@@ -111,6 +113,37 @@ class App extends Component {
     this.pannerNode.pan.value = Number(value) / 100;
   }
 
+  handleSourceChange = () => {
+    const useVoice = !this.state.useVoice
+    this.setState({ useVoice });
+    this.sourceNode.disconnect();
+    this.gainNode.disconnect();
+    this.convolverNode.disconnect();
+    this.analyserNode.disconnect();
+    this.pannerNode.disconnect();
+    this.mergerNode.disconnect();
+    this.getUserMedia()
+      .then((audioStream) => {
+        this.voiceSourceNode = this.audioContext.createMediaStreamSource(audioStream)
+        this.sourceNode = useVoice ? this.voiceSourceNode : this.mediaSourceNode;
+        if (this.state.convolverOn) {
+          this.sourceNode.connect(this.mergerNode);
+          this.mergerNode.connect(this.convolverNode);
+          this.convolverNode.connect(this.gainNode);
+          this.gainNode.connect(this.pannerNode);
+          this.pannerNode.connect(this.audioContext.destination);
+          this.pannerNode.connect(this.analyserNode);
+        } else {
+          this.sourceNode.connect(this.mergerNode);
+          this.mergerNode.connect(this.gainNode);
+          this.gainNode.connect(this.pannerNode);
+          this.pannerNode.connect(this.audioContext.destination);
+          this.pannerNode.connect(this.analyserNode);
+        }
+      })
+
+  }
+
   handleConvolverChange = () => {
     const convolverOn = !this.state.convolverOn;
     this.setState({ convolverOn });
@@ -121,7 +154,6 @@ class App extends Component {
     this.pannerNode.disconnect();
     this.mergerNode.disconnect();
     if (convolverOn) {
-      // Check this out!
       this.sourceNode.connect(this.mergerNode);
       this.mergerNode.connect(this.convolverNode);
       this.convolverNode.connect(this.gainNode);
@@ -179,6 +211,7 @@ class App extends Component {
               </div>
               <RowWrapper>
                 <VideoCodeExample />
+                <Button onClick={this.handleSourceChange}>Change Source to {this.state.useVoice ? 'Video' : 'Voice'}</Button>
               </RowWrapper>
             </ColumnWrapper>
             <ColumnWrapper>
@@ -203,7 +236,11 @@ class App extends Component {
                     <PanningCodeExample />
                   </div>
                 }
-                oscillationControls={<Keyboard playNote={this.playNote} stopPlaying={this.stopPlaying} />}
+                oscillationControls={
+                <div>
+                  <Keyboard playNote={this.playNote} stopPlaying={this.stopPlaying} />
+                  <OscillatorCodeExample />
+                </div>}
               />
             </ColumnWrapper>
           </RowWrapper>
