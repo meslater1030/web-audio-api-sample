@@ -20,7 +20,10 @@ import VideoCodeExample from './components/VideoCodeExample';
 import ConvolverCodeExample from './components/ConvolverCodeExample';
 import PanningCodeExample from './components/PanningCodeExample';
 import OscillatorCodeExample from './components/OscillatorCodeExample';
-import { Button } from '@material-ui/core';
+import { Button, RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
+
+const PHASERS_URL = 'https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/stab-static-frequency-warp_zJIVQYV_.mp3';
+const CROWD_URL = './concert-crowd.ogg';
 
 class App extends Component {
   constructor(props) {
@@ -33,6 +36,7 @@ class App extends Component {
       convolverOn: false,
       pan: 50,
       useVoice: false,
+      convolverValue: 'phasers'
     };
 
     this.audioContext = new AudioContext();
@@ -70,8 +74,9 @@ class App extends Component {
 
   setupVideoElement = (videoElement) => {
     this.videoElement = videoElement;
-    this.setupConvolverNode()
+    this.setupConvolverNode(PHASERS_URL)
       .then((buffer) => {
+        this.phasersBuffer = buffer;
         this.convolverNode = this.audioContext.createConvolver();
         this.convolverNode.buffer = buffer;
         this.sourceNode = this.audioContext.createMediaElementSource(videoElement);
@@ -93,10 +98,10 @@ class App extends Component {
       });
   }
 
-  setupConvolverNode = () => {
+  setupConvolverNode = (url) => {
     return new Promise((resolve, reject) => {
       const ajaxRequest = new XMLHttpRequest();
-      ajaxRequest.open('GET', 'https://d1490khl9dq1ow.cloudfront.net/sfx/mp3preview/stab-static-frequency-warp_zJIVQYV_.mp3', true);
+      ajaxRequest.open('GET', url, true);
       ajaxRequest.responseType = 'arraybuffer';
       ajaxRequest.onload = () => this.audioContext.decodeAudioData(ajaxRequest.response, resolve, reject);
       ajaxRequest.send();
@@ -111,6 +116,18 @@ class App extends Component {
   handlePanningChange = (e, value) => {
     this.setState({ pan: value });
     this.pannerNode.pan.value = Number(value) / 100;
+  }
+
+  handleConvolverBufferChange = (e, value) => {
+    this.setState({ convolverValue: value });
+    if (value === 'crowd' && !this.crowdBuffer) {
+      return this.setupConvolverNode(CROWD_URL)
+        .then((buffer) => {
+          this.crowdBuffer = buffer;
+          this.convolverNode.buffer = buffer;
+        });
+    }
+    this.convolverNode.buffer = value === CROWD_URL ? this.crowdBuffer : this.phasersBuffer;
   }
 
   handleSourceChange = () => {
@@ -223,9 +240,13 @@ class App extends Component {
                   </div>
                 }
                 convolverControls={
-                  <div style={{ width: '500px', textAlign: 'center' }}>
+                  <div style={{ width: '500px' }}>
                     <Typeography>Convolver</Typeography>
                     <Switch checked={this.state.convolverOn} onChange={this.handleConvolverChange} />
+                    <RadioGroup value={this.state.convolverValue} onChange={this.handleConvolverBufferChange}>
+                      <FormControlLabel value="phasers" control={<Radio />} label="Phasers" />
+                      <FormControlLabel value="crowd" control={<Radio />} label="Crowd" />
+                    </RadioGroup>
                     <ConvolverCodeExample />
                   </div>
                 }
