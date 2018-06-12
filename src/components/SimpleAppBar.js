@@ -28,7 +28,7 @@ function SimpleAppBar(props) {
               @meslater1030
             </Typography>
           </div>
-          <img src="./GenUILogo.png" style={{ height: '80px' }}/>
+          <img src="./GenUILogo.png" style={{ height: '80px' }} alt="GenUI Logo" />
         </Toolbar>
       </AppBar>
     </div>

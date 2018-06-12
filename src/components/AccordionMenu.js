@@ -48,9 +48,11 @@ class ControlledExpansionPanels extends React.Component {
             <Typography className={classes.heading}>Audio Visualizer</Typography>
             <Typography className={classes.secondaryHeading}>A bar chart representing the audio</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            {this.props.audioVisualizerDemo}
-          </ExpansionPanelDetails>
+          {this.props.audioVisualizerDemo && 
+            <ExpansionPanelDetails>
+              {this.props.audioVisualizerDemo}
+            </ExpansionPanelDetails>
+          }
         </ExpansionPanel>
         <ExpansionPanel expanded={panel2Expanded} onChange={this.handleChange('panel2')}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>

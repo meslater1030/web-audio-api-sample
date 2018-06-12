@@ -116,7 +116,7 @@ export default class AudioVisualizer extends React.Component {
     return this.setupVisualizerInterval();
   }
 
-  toggleVisualization = (e, value) => {
+  toggleVisualization = (e, value) => { 
     this.setState({ showSineWave: value });
   }
 
@@ -129,8 +129,8 @@ export default class AudioVisualizer extends React.Component {
         <Slider value={this.state.smoothingTimeConstant} aria-labelledby="smoothing-time-constant" onChange={this.handleSmoothingTimeConstantChange} />
         <Typography id="fft-size">FFT Size</Typography>
         <Slider aria-labelledby="fft-size" value={this.state.fftSize} onChange={this.handleFftSizeChange} />
-        <FormControlLabel control={ <Checkbox value={this.state.showSineWave} onChange={this.toggleVisualization} />} label="Show Sine Wave" />
-        {this.state.showSineWave && <canvas
+        <FormControlLabel control={ <Checkbox checked={this.state.showSineWave} onChange={this.toggleVisualization} />} label="Show Sine Wave" />
+        <canvas
           ref={(canvasElement) => {
             if (!this.canvasElement) {
               this.canvasElement = canvasElement;
@@ -139,7 +139,8 @@ export default class AudioVisualizer extends React.Component {
           }}
           width="500"
           height="200"
-        />}
+          style={{ display: this.state.showSineWave ? 'initial' : 'none' }}
+        />
         {!this.state.showSineWave &&
           <div style={{ display: 'flex', alignItems: 'flex-end', alignContent: 'flex-end', height: '200px', width: '500px' }}>
             {bars}

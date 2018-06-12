@@ -6,7 +6,6 @@ import AudioNode from './AudioNode';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import Typography from '@material-ui/core/Typography';
 import RowWrapper from './RowWrapper';
-import ColumnWrapper from './ColumnWrapper';
 
 export default function OscillatorCodeExample() {
     const codeString = `
