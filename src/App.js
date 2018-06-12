@@ -17,6 +17,7 @@ import ColumnWrapper from './components/ColumnWrapper';
 import RowWrapper from './components/RowWrapper';
 import VisualizerCode from './components/VisualizerCode';
 import VideoCodeExample from './components/VideoCodeExample';
+import ConvolverCodeExample from './components/ConvolverCodeExample';
 
 class App extends Component {
   constructor(props) {
@@ -191,6 +192,7 @@ class App extends Component {
                   <div style={{ width: '500px', textAlign: 'center' }}>
                     <Typeography>Convolver</Typeography>
                     <Switch checked={this.state.convolverOn} onChange={this.handleConvolverChange} />
+                    <ConvolverCodeExample />
                   </div>
                 }
                 panningControls={
