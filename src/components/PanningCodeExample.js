@@ -22,7 +22,7 @@ export default function PanningCodeExample() {
         pannerNode.pan.value = 0.20 // This value is between 0 and 1
 
     `;
-    return <FullPageDialog dialogTitle="Convolver Code Example" dialogContent={ 
+    return <FullPageDialog dialogTitle="Panner Code Example" dialogContent={ 
         <React.Fragment>
             <SyntaxHighlighter language='javascript' style={light}>{codeString}</SyntaxHighlighter>
             <Typography variant="title">
